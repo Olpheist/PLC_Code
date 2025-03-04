@@ -149,5 +149,42 @@ cols :: Matrix a -> Matrix a
 cols [xs]     = [ [x] | x <- xs ] 
 cols (xs:xss) = zipWith (:) xs (cols xss)
 
+boxs :: Matrix a -> Matrix a
+boxs = map ungroup . ungroup . -- then ungroup the elements
+       map cols .              -- transpose each row
+       group . map group       --group rows, then group elements
+
+-- a b c d
+-- e f g h
+-- i j k l
+-- m n o p
+
+-- first row would be a b e f
+-- second row would be c d g h
+-- third row would be i j m n
+-- fourth row would be k l o p
+
+-- elements we dont want to change we keep together
+
+-- ((a b  c d  e f  g h) (i j  k l  m n  o p))
+-- then transpose
+-- ((a b   ef  cd  gh) (i j   mn  kl  op))
+-- then ungroup the elements
+
+-- the first row would be [a b c d] after the first group
+-- then the second group results in [[a b] [c d]]
+
+group :: [a] -> [[a]]
+group [] = []
+group xs = (take 3 xs) : (group (drop 3 xs))
+--could pattern match with group (x1:x2:x3:xs)
+
+ungroup :: [[a]] -> [a]
+ungroup = concat
+-- ungroup [] = []
+-- ungroup (xs:xss) = xs ++ ungroup xss
+
+
+
 main = return ()
 
