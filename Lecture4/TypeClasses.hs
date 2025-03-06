@@ -44,4 +44,25 @@ teq (5 :: Int) 5 5
 teq (5 :: Int) 5 6
 --False
 
-hoogle.haskell.org
+--hoogle.haskell.org
+
+map (+ 2) [1, 2, 3, 4]
+-- [3, 4, 5, 6]
+
+:intances []
+
+fmap (+ 2) [1, 2, 3, 4]
+-- [3, 4, 5, 6]
+
+fmap (+ 2) (Just 3)
+-- Just 5
+
+fmap (+ 2) Nothing
+-- Nothing
+
+fmap (+ 2) (* 5)
+-- well defined, but no instance for 'Show (Integer -> Integer)'
+
+(fmap (+ 2) (* 5)) 3
+-- 17
+
