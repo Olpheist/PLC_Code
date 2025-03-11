@@ -1,5 +1,5 @@
-:type (== 5)
-:type (== (5 :: Int))
+-- :type (== 5)
+-- :type (== (5 :: Int))
 
 elem :: Eq a => a -> [a] -> Bool
 elem x [] = False
@@ -9,7 +9,7 @@ elem x (y:ys)
 
 -- partially applying
 
-:type (elem (5 :: Int))
+-- :type (elem (5 :: Int))
 -- (elem (5 :: Int)) :: [Int] -> Bool
 
 eitherElem :: Eq a => a -> [a] -> [a] -> Bool
