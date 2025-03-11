@@ -223,5 +223,5 @@ pruneRow = map (remove fixed) row
     where fixed = [d | [d] <- row]
 
 remove :: [Digit] -> [Digit] -> [Digit]
-remove ds [x] = [x]
-remove ds xs = filter (`notElem ds) xs
+remove ds [x] = [x]S
+remove ds xs = filter (`notElem` ds) xs
