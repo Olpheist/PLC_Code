@@ -218,7 +218,7 @@ prune = map pruneRow
 -- filter . valid . expand = filter valid . expand . prune
 --  expand /== expand . prune
 
-pruneRow :: Row [Digit
+pruneRow :: Row [Digit]
 pruneRow = map (remove fixed) row
     where fixed = [d | [d] <- row]
 
