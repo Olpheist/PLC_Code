@@ -375,5 +375,5 @@ solve' = search . choices
           | otherwise = concat (map search (expand1 pm))
              where pm = prune cm
 
-main = return ()
+--main = return ()
 
