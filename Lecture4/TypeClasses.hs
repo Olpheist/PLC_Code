@@ -19,7 +19,7 @@ eitherElem x xs ys
     | otherwise = False
 
 
-class Eq a => threeEq a where
+class Eq a => ThreeEq a where
     teq :: a -> a -> a -> Bool
     teq x y z
         | x == y && y == z = True
@@ -27,10 +27,10 @@ class Eq a => threeEq a where
     notteq :: a -> a -> a -> Bool
     notteq x y z = not (teq x y z)
 
-instance threeEq Int where
-instance threeEq Char where
-instance Eq a => threeEq [a] where
-instance threeEq Bool where
+instance ThreeEq Int where
+instance ThreeEq Char where
+instance Eq a => ThreeEq [a] where
+instance ThreeEq Bool where
 
     -- teq x y z
     -- below can be a default implementation in the class def
@@ -49,7 +49,7 @@ teq (5 :: Int) 5 6
 map (+ 2) [1, 2, 3, 4]
 -- [3, 4, 5, 6]
 
-:intances []
+:instances []
 
 fmap (+ 2) [1, 2, 3, 4]
 -- [3, 4, 5, 6]
