@@ -2,6 +2,11 @@
 
 Exam Format:
 
+--know map, filter, fold definitions
+--know induction over lists, each data constructor with one case
+--review currying
+--defining data types and giving structure through type classes
+
 pen-and-paper programming questions
 knowledge questions
 prove properties about programs by using equivalences between Haskell expressions and by using induction
@@ -157,5 +162,46 @@ fmap (+ 2) (* 5)
 
 (fmap (+ 2) (* 5)) 3
 -- 17
+
+-}
+
+{-
+-----------------------------------------------------------------------------------------------------
+Induction problem example:
+
+prove the following
+
+head (filter (>3) xs) > 1
+
+assume xs contains an element >3
+
+definition of filter  --if needed then will be provided on exam
+
+filter p [] = []
+filter p [x:xs]
+    | p x = x:(filter p xs)
+    | otherwise = filter p xs
+
+start with base case
+
+Base case 
+xs = [n] where n > 3
+head (filter (>3) [n]) = head (n: filter (>3) []) = n 
+--haskell does lazy evaluation, not inside out, so head returns n
+
+Step case:
+xs = y:ys
+Case 1: y > 3
+head (filter (>3) y:ys) = head (y: filter (>3) ys) = y > 3 > 1 --done
+
+Case 2: y < 3 then ys contains > 3 due to induction we can assume
+head (filter (>3) ys) > 1
+
+head (filter (>3)) y:ys) = head (filter (>3) ys) > 1 based on assumption
+-----------------------------------------------------------------------------------------------------
+Might be asked for a counterexample (in the above the case of the empty list would be the answer)
+
+
+
 
 -}
