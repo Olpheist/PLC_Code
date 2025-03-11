@@ -1,6 +1,6 @@
 module Lecture2 where
 
-import Prelude hiding (((<>), (<|>), words)
+import Prelude hiding ((<>), (<|>), words)
 
 import Data.List ((\\))
 
@@ -10,11 +10,9 @@ type Regex = [String]
 alphabet :: [Char]
 alphabet = ['a'..'z'] ++ ['A'..'Z'] ++ [' ']
 
-char, noChars :: [Char] -> Regex
-
-
+chars, notChars :: [Char] -> Regex
 chars cs = [  [c]  | c <- cs]
-notChars cs = [  [c]  | c <- alphabet \\ cs]
+notChars cs = chars (alphabet \\ cs)
 
 anyChars :: Regex
 anyChars = chars alphabet
@@ -33,11 +31,28 @@ cross f xs ys = concatMap withY ys where
     withX y x = f x y
     withY y = map (withX y) xs
 
+r <> s = cross (++) r s 
+
 -- r <|> none = r
 plus, question, star :: Regex -> Regex
 
 plus r = r <> (star r)
-question r = r <|> empty
+question r = empty <|> r
 star r = question (plus r)
+
+--------------------------------
+upper, lower, space :: Regex
+upper = chars ['A'..'Z']
+lower = chars ['a'..'z']
+space = chars [' ']
+
+word = upper <> star lower
+words = word <> star (space <> word)
+--------------------------------
+
+data DRegex = AnyChars | Chars [Char] | NotChars [Char] |
+    DRegex:|: DRegex | None | DRegex :<>: DRegex | Empty | Question DRegex |
+    Plus DRegex | Star DRegex
+        deriving (Show)
 
 main = return ()
