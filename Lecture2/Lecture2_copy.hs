@@ -1,6 +1,6 @@
 module Lecture2 where
 
-import Prelude hiding (((<>), (<|>), words)
+import Prelude hiding ((<>), (<|>), words)
 
 import Data.List ((\\))
 
