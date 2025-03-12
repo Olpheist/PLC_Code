@@ -2,10 +2,17 @@
 
 Exam Format:
 
+from review lecture
 --know map, filter, fold definitions
 --know induction over lists, each data constructor with one case
 --review currying
 --defining data types and giving structure through type classes
+--for myself, review go, let, nil
+--tail recursion, look at fibonnaci example in 03 Recursion lecture  <---- important
+--type class behaves like an interface in Java, describes the shape of a type that you can work with
+    -- lecture slides 05 Types and their Properties
+    -- deriving (Eq, Ord, Read, Show) are default implemenation of these specific type classes
+    -- instance to implement the type class
 
 pen-and-paper programming questions
 knowledge questions
@@ -200,8 +207,12 @@ head (filter (>3) ys) > 1
 head (filter (>3)) y:ys) = head (filter (>3) ys) > 1 based on assumption
 -----------------------------------------------------------------------------------------------------
 Might be asked for a counterexample (in the above the case of the empty list would be the answer)
+-----------------------------------------------------------------------------------------------------
 
-
+A functor is something you can map over; a list is the classical example
+any type constructor that might contain some values you can apply a function to
+Like a generalization of map
+Show is an example functor
 
 
 -}
