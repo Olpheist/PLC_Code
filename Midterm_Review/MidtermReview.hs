@@ -38,11 +38,11 @@ Reasoning about functions
 
 -}
 
-{-
+{-S
 
 Regular Expressions
 
-import Prelude hiding (((<>), (<|>), words)
+import Prelude hiding ((<>), (<|>), words)
 
 import Data.List ((\\))
 
