@@ -62,5 +62,56 @@ smallStep (Times m n )
     | otherwise = Times (smallStep m) n
 smallStep (Negate (Const i)) = Const (- i)
 smallStep (Negate m) = Negate (smallStep m)
+smallStep (Pair m n)
+    | isValue m = Pair m (smallStep n)
+    | otherwise = Pair (smallStep m) n
+smallStep (Fst (Pair m n ))
+    | isValue m = m  -- if m is a value, return it directly
+    | otherwise = Fst (smallStep m)  -- otherwise, keep stepping on m
+smallStep (Fst m) = Fst (smallStep m)
+smallStep (Snd (Pair m n )) = n
+smallStep (Snd m) = Snd (smallStep m)
+smallSteps :: Expr -> [Expr]
+smallSteps m
+  | isValue m = [m]
+  | otherwise = m : smallSteps (smallStep m)
+
+try :: Maybe a -> (a -> b) -> Maybe b -> Maybe b
+try m f z = maybe z (Just . f) m
+
+binaryCong :: (Expr -> Expr -> Expr) -> Expr -> Expr -> Maybe Expr
+binaryCong f m n = try (smallStep' m)
+                       (\m' -> f m' n) -- apply f to the result of smallStep' m
+                       (try (smallStep' n) 
+                            (\n' -> f m n') 
+                            Nothing)
+
+unaryCong :: (Expr -> Expr) -> Expr -> Maybe Expr
+unaryCong f m = try (smallStep' m) f Nothing
+-- smallStep' is a version of smallStep that returns a Maybe Expr
+
+smallStep' :: Expr -> Maybe Expr
+smallStep' (Const i)  = Nothing
+
+smallStep' (Plus (Const i) (Const j)) = Just (Const (i + j))
+smallStep' (Plus m n)                 = binaryCong Plus m n
+
+smallStep' (Times (Const i) (Const j)) = Just (Const (i * j))
+smallStep' (Times m n)                 = binaryCong Times m n
+
+smallStep' (Negate (Const i)) = Just (Const (negate i))
+smallStep' (Negate m)         = unaryCong Negate m
+
+smallStep' (Pair m n)       = binaryCong Pair m n
+smallStep' (Fst (Pair m n)) = Just m
+smallStep' (Fst m)          = unaryCong Fst m
+smallStep' (Snd (Pair m n)) = Just n
+smallStep' (Snd m)          = unaryCong Snd m
+
+smallSteps' :: Expr -> [Expr]
+smallSteps' m = 
+  case smallStep' m of
+    Nothing -> [m]  -- if no more steps, return the value
+    Just m' -> m : smallSteps' m'  -- otherwise, keep stepping on m'
 
 main = return ()
