@@ -1,6 +1,6 @@
 type Name = String
 data Expr = Const Int | Plus Expr Expr | Times Expr Expr 
-        | Var Name| Lam Name Expr | App Expr Expr
+        | Var Name| Lam Name Expr | App Expr Expr | Subst Name Expr Expr --read "Subst x m n as n [n/m]"
   deriving (Eq, Show)
 
 (@) :: Expr -> Expr -> Expr
@@ -57,20 +57,44 @@ prints :: Show a => [a] -> IO ()
 prints = mapM_ print
 
 
-binaryCongCBN = binaryCongGeneric smallStepCBN
+binaryCong byName = binaryCongGeneric (smallStep byName)
+
+--  map f l    (map (+1))
+-- map l f     (map [1,2,3])
+
+smallStep :: Bool -> Expr -> Maybe Expr
+smallStep _      (Const _)                   = Nothing
+smallStep _      (Var _)                     = Nothing
+smallStep _      (Lam _ _)                   = Nothing
+smallStep _      (Plus (Const i) (Const j))  = Just (Const (i + j))
+smallStep byName (Plus m n)                  = binaryCong byName Plus m n
+smallStep _      (Times (Const i) (Const j)) = Just (Const (i * j))
+smallStep byName (Times m n)                 = binaryCong byName Times m n
+smallStep byName  (App (Lam x n) m)
+    | byName = Just (Subst x m n )
+    | otherwise = try (smallStep byName n) (App (Lam x m))
+                      (Just (Subst x n m))
+smallStep byName (App m n) = try (smallStep byName m)
+                                    (\m' -> App m' n) Nothing
+smallStep byName (Subst x m (Const i)) = Just (Const i)
+smallStep byName (Subst var1 m (Var var2))
+    | var1 == var2   = Just m
+    | otherwise      = Just (Var var2)
+smallStep byName (Subst x m (Plus n1 n2))  = Just (Plus (Subst x m n1) (Subst x m n2))
+smallStep byName (Subst x m (Times n1 n2)) = Just (Times (Subst x m n1) (Subst x m n2))
+smallStep byName (Subst x m (App n1 n2))   = Just (App (Subst x m n1) (Subst x m n2))
+smallStep byName (Subst var1 m (Lam var2 n))
+    | var1 == var2 = Just (Lam var2 n)
+    | otherwise    = Just (Lam var2 (Subst var1 m n))
+smallStep byName (Subst x m n) = try (smallStep byName n)
+                                     (Subst x m ) Nothing
+  
+smallSteps :: Bool -> Expr -> [Expr]
+smallSteps byName = untilNothing (smallStep byName)
 
 
---CBN is call by name
-smallStepCBN :: Expr -> Maybe Expr
-smallStepCBN (Const _)                   = Nothing
-smallStepCBN (Var x)                     = Nothing
-smallStepCBN (Lam _ _)                   = Nothing
-smallStepCBN (Plus (Const i) (Const j))  = Just (Const (i + j))
-smallStepCBN (Plus m n)                  = binaryCongCBN Plus m n
-smallStepCBN (Times (Const i) (Const j)) = Just (Const (i * j))
-smallStepCBN (Times m n)                 = binaryCongCBN Times m n
-smallStepCBN (App (Lam x n) m)           = Just (substitute x m n)
-smallStepCBN (App m n)                   = binaryCongCBN App m n
+
+
 
 binaryCongCBV = binaryCongGeneric smallStepCBV
 
