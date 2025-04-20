@@ -50,7 +50,7 @@ Reasoning about functions
 
 -}
 
-{-S
+{-
 
 Regular Expressions
 
