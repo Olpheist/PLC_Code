@@ -1,7 +1,7 @@
 type Name = String
 
 data Expr = Const Int | Plus Expr Expr | Times Expr Expr 
-        | Var Name| Lam Name Expr | App Expr Expr
+        | Var Name| Lam Name Expr | App Expr Expr | Store Expr | Recall
   deriving (Eq, Show)
 
 
@@ -66,19 +66,20 @@ bigStepCBV h (App m n) = asClosure (bigStepCBV h m) $ \(EV h') x m' ->
 --map f $ take 3 [1..]
 
 
-data EnvCBN = EN [(Name, (Expr, EnvCBN))]
+data EnvCBN = EV [(Name, (Expr, EnvCBN))]
   deriving (Eq, Show)
 
 type ValueCBN = Value EnvCBN
 
 bigStepCBN :: EnvCBN -> Expr -> Maybe ValueCBN
 bigStepCBN _ (Const i) = Just (VInt i)
-bigStepCBN (EN h) (Var x) = case lookup x h of
+bigStepCBN (EV h) (Var x) = case lookup x h of
                             Just (e, h') -> bigStepCBN h' (App (Lam x e) (Var x))
 bigStepCBN h (Lam x m) = Just (VClosure h x m)
 bigStepCBN h (Plus m n) = asInt (bigStepCBN h m) $ \i ->
                           asInt (bigStepCBN h n) $ \j -> Just $ VInt (i + j)
 bigStepCBN h (Times m n) = asInt (bigStepCBN h m) $ \i ->
                           asInt (bigStepCBN h n) $ \j -> Just $ VInt (i * j)
-bigStepCBN h (App m n) = asClosure (bigStepCBN h m) $ \(EN h') x m' -> bigStepCBN (EN ((x, (n, h)): h')) m'
+bigStepCBN h (App m n) = asClosure (bigStepCBN h m) $ \(EV h') x m' -> bigStepCBN (EV ((x, (n, h)): h')) m'
+
 main = return ()
